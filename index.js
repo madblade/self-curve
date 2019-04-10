@@ -26,7 +26,7 @@ var present = mathbox.present({index: 0});
 var slide = present.clock().slide({id: 'top'});
 
 // Axes + grid
-slide.cartesian({ range: [[-2, 2], [-2, 2], [-2, 2]], scale: [4, 4, 4], position: [0, -.55]})
+slide.cartesian({ range: [[-2, 2], [-2, 2], [-2, 2]], scale: [4, 4, 3], position: [0, -.55]})
     .axis({axis: 1, width: 3, detail: 256})
     .axis({axis: 2, width: 3, detail: 256})
     .axis({axis: 3, width: 3, detail: 256})
@@ -35,7 +35,7 @@ slide.cartesian({ range: [[-2, 2], [-2, 2], [-2, 2]], scale: [4, 4, 4], position
 
 mathbox.select('axis').set('color', 'black');
 slide
-    .cartesian({ range: [[-2, 2], [-2, 2], [-2, 2]], scale: [4, 4, 4], position: [0, -.55]})
+    .cartesian({ range: [[-2, 2], [-2, 2], [-2, 2]], scale: [4, 4, 3], position: [0, -.55]})
     .slide()
 
     .area({ axes: [1, 3], channels: 2, width: curveResolution, expr: curve})
@@ -46,13 +46,25 @@ slide
     .line({color: '#3a46fd', size: 15, opacity: 1, zIndex: 2 })
     .slide()
 
+    .area({ axes: [1, 3], channels: 2, width: segmentResolution, expr: segment})
+    .point({color: '#3a46fd', size: 20, opacity: 1, zIndex: 2 })
+    .slide()
+
     .area({ axes: [1, 3], channels: 3, width: segmentResolution, expr: segment2})
-    .line({color: '#3a46fd', size: 15, opacity: 1, zIndex: 2 })
+    .line({color: '#3a46fd', size: 50, opacity: 1, zIndex: 2 })
+    .slide()
+
+    .area({ axes: [1, 3], channels: 3, width: segmentResolution-1, expr: segment2})
+    .point({color: '#3a46fd', size: 20, opacity: 1, zIndex: 2 })
     .slide()
 
     .area({ axes: [1, 3], channels: 3, width: resoCross, height: resoCross, expr: emitSurfaceCross})
     .surface({ zBias: 3, shaded: true, fill:false, lineX: true,
-        lineY: true, color: '#e722ff', opacity: 0.8})
+        lineY: true, color: '#474cff', opacity: 0.8})
+    .slide()
+    .area({ axes: [1, 3], channels: 3, width: resoCross, height: resoCross, expr: emitSurfaceCross})
+    .surface({ zBias: 3, shaded: true, lineX: true,
+        lineY: true, color: '#86b1ff', opacity: 0.8})
     .slide()
 
     .area({ id: 'surfaceArea0', axes: [1, 3], width: 50, height: 25, channels: 3, expr: emitSurfaceBlop})

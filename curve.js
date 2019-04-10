@@ -80,6 +80,8 @@ var emitSurfaceBlopTime = function (emit, x, y, i, j, t) {
 };
 
 var curveResolution = 256;
+
+var resoCross = curveResolution;
 var segmentResolution = 2;
 var generator = Simple1DNoise();
 var noise1D = [];
@@ -102,8 +104,8 @@ var curve = function(emit, x, i, t) {
     );
 };
 
-var pp1 = -0.8;
-var pp2 = -1.1;
+var pp1 = -0.5;
+var pp2 = -1.2;
 var segment = function(emit, x, i, t) {
     let xp = (x < 0 ? pp1:pp2);
     let xx = xp * Math.PI / 2;
@@ -122,7 +124,7 @@ var segment = function(emit, x, i, t) {
 };
 
 var segment2 = function(emit, x, i, t) {
-    let bottom = (x < 0);
+    let bottom = (x > 0);
     let xp1 = pp1;
     let xx = xp1 * Math.PI / 2;
     let normalX = (xp1+2)/4;
@@ -156,7 +158,6 @@ var segment2 = function(emit, x, i, t) {
     );
 };
 
-var resoCross = 200;
 var emitSurfaceCross = function(emit, x, y, i, j, t) {
     let xp1 = x;
     let xx = xp1 * Math.PI / 2;
