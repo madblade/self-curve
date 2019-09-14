@@ -49,7 +49,7 @@ var Simple1DNoise = function() {
 };
 
 // function mainFunction(x, y) {
-//     return (π / 2 + .6 * Math.sin(x - y + 2 * Math.sin(y)) + .3 * Math.sin(x * 2 + y * 2 * 1.81)
+//     return (Math.PI / 2 + .6 * Math.sin(x - y + 2 * Math.sin(y)) + .3 * Math.sin(x * 2 + y * 2 * 1.81)
 //         + .1825 * Math.sin(x * 3 - y * 2 * 2.18)) - .5;
 // }
 
@@ -57,14 +57,14 @@ var Simple1DNoise = function() {
 // My function:
 // 1.570796 + .6 * sin(x - y + 2 * sin(y)) + .3 * sin(x * 2 + y * 2 * 1.81) + .1825 * sin(x * 3 - y * 2 * 2.18)) -.5
 function multisine(x, y) {
-    return (π / 2
+    return (Math.PI / 2
         + .6 *    Math.sin(x - y + 2 * Math.sin(y))
         + .3 *    Math.sin(x * 2 + y * 2 * 1.81)
         + .1825 * Math.sin(x * 3 - y * 2 * 2.18)) - .5
 }
 
 function multisineT(t, x, y) {
-    return (π / 2
+    return (Math.PI / 2
         + .6 * Math.sin(x + t - y + 2 * Math.sin(y))
         + .3 * Math.sin(x * 2 + t + y * 2 * 1.81)
         + .1825 * Math.sin(x * 3 + t - y * 2 * 2.18)) - .5;
@@ -75,7 +75,7 @@ var emitSurfaceBlop = function (emit, x, y, i, j) {
 };
 
 var emitSurfaceBlopTime = function (emit, x, y, i, j, t) {
-    let t1 = t % (2 * Math.PI);
+    var t1 = t % (2 * Math.PI);
     return emit(x, y, multisineT(t1, x, y));
 };
 
@@ -85,18 +85,18 @@ var resoCross = curveResolution;
 var segmentResolution = 2;
 var generator = Simple1DNoise();
 var noise1D = [];
-for (let i = 0; i < curveResolution; ++i)
-    noise1D.push(generator.getVal(i / 15));
+for (var idx = 0; idx < curveResolution; ++idx)
+    noise1D.push(generator.getVal(idx / 15));
 
 var curve = function(emit, x, i, t) {
-    let xx = x * Math.PI / 2;
-    let normalX = (x+2)/4;
-    let distStart = normalX;
-    let distEnd = Math.abs(1 - normalX);
+    var xx = x * Math.PI / 2;
+    var normalX = (x+2)/4;
+    var distStart = normalX;
+    var distEnd = Math.abs(1 - normalX);
 
-    let ind = Math.floor((curveResolution-1) * normalX);
-    let c1 = 10.0 * distStart * distEnd * noise1D[ind];
-    let c2 = 0.5;
+    var ind = Math.floor((curveResolution-1) * normalX);
+    var c1 = 10.0 * distStart * distEnd * noise1D[ind];
+    var c2 = 0.5;
 
     return emit(
         c2 * (1.0 + c1) * Math.cos(xx),
@@ -107,15 +107,15 @@ var curve = function(emit, x, i, t) {
 var pp1 = -0.5;
 var pp2 = -1.2;
 var segment = function(emit, x, i, t) {
-    let xp = (x < 0 ? pp1:pp2);
-    let xx = xp * Math.PI / 2;
-    let normalX = (xp+2)/4;
-    let distStart = normalX;
-    let distEnd = Math.abs(1 - normalX);
+    var xp = (x < 0 ? pp1:pp2);
+    var xx = xp * Math.PI / 2;
+    var normalX = (xp+2)/4;
+    var distStart = normalX;
+    var distEnd = Math.abs(1 - normalX);
 
-    let ind = Math.floor((curveResolution-1) * normalX);
-    let c1 = 10.0 * distStart * distEnd * noise1D[ind];
-    let c2 = 0.5;
+    var ind = Math.floor((curveResolution-1) * normalX);
+    var c1 = 10.0 * distStart * distEnd * noise1D[ind];
+    var c2 = 0.5;
 
     return emit(
         c2 * (1.0 + c1) * Math.cos(xx),
@@ -124,20 +124,20 @@ var segment = function(emit, x, i, t) {
 };
 
 var segment2 = function(emit, x, i, t) {
-    let bottom = (x > 0);
-    let xp1 = pp1;
-    let xx = xp1 * Math.PI / 2;
-    let normalX = (xp1+2)/4;
-    let distStart = normalX;
-    let distEnd = Math.abs(1 - normalX);
+    var bottom = (x > 0);
+    var xp1 = pp1;
+    var xx = xp1 * Math.PI / 2;
+    var normalX = (xp1+2)/4;
+    var distStart = normalX;
+    var distEnd = Math.abs(1 - normalX);
 
-    let ind = Math.floor((curveResolution-1) * normalX);
-    let c1 = 10.0 * distStart * distEnd * noise1D[ind];
-    let c2 = 0.5;
-    let x1 = c2 * (1.0 + c1) * Math.cos(xx);
-    let y1 = c2 * (1.0 + c1) * Math.sin(xx);
+    var ind = Math.floor((curveResolution-1) * normalX);
+    var c1 = 10.0 * distStart * distEnd * noise1D[ind];
+    var c2 = 0.5;
+    var x1 = c2 * (1.0 + c1) * Math.cos(xx);
+    var y1 = c2 * (1.0 + c1) * Math.sin(xx);
 
-    let xp2 = pp2;
+    var xp2 = pp2;
     xx = xp2 * Math.PI / 2;
     normalX = (xp2+2)/4;
     distStart = normalX;
@@ -145,8 +145,8 @@ var segment2 = function(emit, x, i, t) {
     ind = Math.floor((curveResolution-1) * normalX);
     c1 = 10.0 * distStart * distEnd * noise1D[ind];
     c2 = 0.5;
-    let x2 = c2 * (1.0 + c1) * Math.cos(xx);
-    let y2 = c2 * (1.0 + c1) * Math.sin(xx);
+    var x2 = c2 * (1.0 + c1) * Math.cos(xx);
+    var y2 = c2 * (1.0 + c1) * Math.sin(xx);
 
     return emit(
         (x1 + x2) / 2,
@@ -158,20 +158,20 @@ var segment2 = function(emit, x, i, t) {
     );
 };
 
-var emitSurfaceCross = function(emit, x, y, i, j, t) {
-    let xp1 = x;
-    let xx = xp1 * Math.PI / 2;
-    let normalX = (xp1+2)/4;
-    let distStart = normalX;
-    let distEnd = Math.abs(1 - normalX);
+var emitSurfaceCross = function(emit, x, y, i, j) {
+    var xp1 = x;
+    var xx = xp1 * Math.PI / 2;
+    var normalX = (xp1+2)/4;
+    var distStart = normalX;
+    var distEnd = Math.abs(1 - normalX);
 
-    let ind = Math.floor((curveResolution-1) * normalX);
-    let c1 = 10.0 * distStart * distEnd * noise1D[ind];
-    let c2 = 0.5;
-    let x1 = c2 * (1.0 + c1) * Math.cos(xx);
-    let y1 = c2 * (1.0 + c1) * Math.sin(xx);
+    var ind = Math.floor((curveResolution-1) * normalX);
+    var c1 = 10.0 * distStart * distEnd * noise1D[ind];
+    var c2 = 0.5;
+    var x1 = c2 * (1.0 + c1) * Math.cos(xx);
+    var y1 = c2 * (1.0 + c1) * Math.sin(xx);
 
-    let xp2 = y;
+    var xp2 = y;
     xx = xp2 * Math.PI / 2;
     normalX = (xp2+2)/4;
     distStart = normalX;
@@ -179,8 +179,8 @@ var emitSurfaceCross = function(emit, x, y, i, j, t) {
     ind = Math.floor((curveResolution-1) * normalX);
     c1 = 10.0 * distStart * distEnd * noise1D[ind];
     c2 = 0.5;
-    let x2 = c2 * (1.0 + c1) * Math.cos(xx);
-    let y2 = c2 * (1.0 + c1) * Math.sin(xx);
+    var x2 = c2 * (1.0 + c1) * Math.cos(xx);
+    var y2 = c2 * (1.0 + c1) * Math.sin(xx);
 
     return emit(
         (x1 + x2) / 2,
@@ -191,3 +191,92 @@ var emitSurfaceCross = function(emit, x, y, i, j, t) {
         )
     );
 };
+
+var voxData = [];
+
+var cols = ['b','b','b','o','b','b','b','o',
+'b','b','o','o','o','o'];
+var divNb = cols.length;
+
+var lle = 5;
+for (var uu = -lle; uu < lle; uu+=0.25) {
+    var x = uu / lle - 0.0001;
+    x *= 2.0;
+    for (var vv = -lle; vv < lle; vv+=0.5) {
+        var y = vv / lle - 0.0001;
+        y *= 2.0;
+
+        var xs = 2 * x / (1 + x*x + y*y);
+        var ys = 2 * y / (1 + x*x + y*y);
+        var zs = (-1 + x*x + y*y) / (1 + x*x + y*y);
+
+        var lx = xs * xs;
+        var ly = ys * ys;
+        var lz = zs * zs;
+        var tlength = 14;
+        var lca = 0;
+        var lcb = 0;
+        if (xs > 0) {
+            var stop = Math.floor(lx*divNb);
+            var dep = lx - stop/divNb;
+            for (var i = 0; i < stop; ++i)
+                if (cols[i] === 'b')
+                    lcb += 1/divNb;
+                else lca += 1/divNb;
+            if (dep > 0)
+                if (cols[stop+1] === 'b')
+                    lcb+=dep;
+                else lcb+=dep;
+        }
+        if (ys > 0) {
+            var start = Math.floor(lx*divNb);
+            var dep0 = lx - start/divNb;
+            if (dep0 > 0) {
+                if (cols[start] === 'b')
+                    lcb+=(1/divNb + dep0);
+                else lcb+=(1/divNb + dep0);
+            }
+            start += 1;
+
+            var stop = Math.floor(ly*divNb);
+            var dep = ly - stop/divNb;
+            for (var i = start; i < stop; ++i)
+                if (cols[i] === 'b')
+                    lcb += 1/divNb;
+                else lca += 1/divNb;
+            if (dep > 0)
+                if (cols[stop+1] === 'b')
+                    lcb+=dep;
+                else lcb+=dep;
+        }
+        if (zs > 0) {
+            var start = Math.floor(ly*divNb);
+            var dep0 = ly - start/divNb;
+            if (dep0 > 0) {
+                if (cols[start] === 'b')
+                    lcb+=(1/divNb + dep0);
+                else lcb+=(1/divNb + dep0);
+            }
+            start += 1;
+
+            var stop = Math.floor(lz*divNb);
+            var dep = lz - stop/divNb;
+            for (var i = start; i < stop; ++i)
+                if (cols[i] === 'b')
+                    lcb += 1/divNb;
+                else lca += 1/divNb;
+            if (dep > 0)
+                if (cols[stop+1] === 'b')
+                    lcb+=dep;
+                else lcb+=dep;
+        }
+
+        lca *= 0.1;
+        lcb *= 0.1;
+        voxData .push([x, y, 0.0]);
+        voxData .push([x+lca, y+lcb, 0.0]);
+        voxData .push([x+lca, y+lcb, 0.0]);
+    }
+}
+
+console.log(voxData);
