@@ -3,14 +3,21 @@ var Simple1DNoise = function()
     var MAX_VERTICES = 256;
     var MAX_VERTICES_MASK = MAX_VERTICES -1;
     var amplitude = 1;
-    var scale = 1;
+    var nbPoints = 15;
+    var scale = 1 / nbPoints;
 
     var r = [];
 
-    for ( var i = 0; i < MAX_VERTICES; ++i ) {
+    // Quick and dirty loop.
+    var fmn = Math.floor(MAX_VERTICES / nbPoints);
+    for ( var i = 0; i < fmn; ++i ) {
         r.push(Math.random());
     }
-    r.push(r[0]);
+    for ( var j = 1; j < 15; ++j ) {
+        for ( var i = 0; i < fmn; ++i ) {
+            r.push(r[i]);
+        }
+    }
 
     var getVal = function( x ){
         var scaledX = x * scale;
@@ -18,7 +25,7 @@ var Simple1DNoise = function()
         var t = scaledX - xFloor;
         var tRemapSmoothstep = t * t * ( 3 - 2 * t );
 
-        /// Modulo using &
+        // Modulo using &
         var xMin = xFloor & MAX_VERTICES_MASK;
         var xMax = ( xMin + 1 ) & MAX_VERTICES_MASK;
 
@@ -56,7 +63,10 @@ function generateClosedCurve(resolution)
     var generator = Simple1DNoise();
     var noise1D = [];
     for (var idx = 0; idx < resolution; ++idx)
-        noise1D.push(generator.getVal(idx / 15));
+        noise1D.push(generator.getVal(idx));
+
+    // console.log(noise1D[0]);
+    // console.log(noise1D[noise1D.length-1]);
 
     var lineMaterial = new MeshLineMaterial({
         color: 0xff8800,
@@ -93,40 +103,7 @@ function generateClosedCurve(resolution)
     return meshLineMesh;
 }
 
-// function mainFunction(x, y) {
-//     return (Math.PI / 2 + .6 * Math.sin(x - y + 2 * Math.sin(y)) + .3 * Math.sin(x * 2 + y * 2 * 1.81)
-//         + .1825 * Math.sin(x * 3 - y * 2 * 2.18)) - .5;
-// }
-
-
-// My function:
-// 1.570796 + .6 * sin(x - y + 2 * sin(y)) + .3 * sin(x * 2 + y * 2 * 1.81) + .1825 * sin(x * 3 - y * 2 * 2.18)) -.5
-function multisine(x, y) {
-    return (Math.PI / 2
-        + .6 *    Math.sin(x - y + 2 * Math.sin(y))
-        + .3 *    Math.sin(x * 2 + y * 2 * 1.81)
-        + .1825 * Math.sin(x * 3 - y * 2 * 2.18)) - .5
-}
-
-function multisineT(t, x, y) {
-    return (Math.PI / 2
-        + .6 * Math.sin(x + t - y + 2 * Math.sin(y))
-        + .3 * Math.sin(x * 2 + t + y * 2 * 1.81)
-        + .1825 * Math.sin(x * 3 + t - y * 2 * 2.18)) - .5;
-}
-
-var emitSurfaceBlop = function (emit, x, y, i, j) {
-    return emit(x, y, multisine(x, y));
-};
-
-var emitSurfaceBlopTime = function (emit, x, y, i, j, t) {
-    var t1 = t % (2 * Math.PI);
-    return emit(x, y, multisineT(t1, x, y));
-};
-
-var resoCross = curveResolution;
-var segmentResolution = 2;
-
+//
 
 var curve = function(emit, x, i, t) {
     var xx = x * Math.PI / 2;
