@@ -1,4 +1,66 @@
+// Init three
+var scene, renderer;
+var camera;
+var controls;
+init();
+animate();
+function init() {
+    // Renderer
+    renderer = new THREE.WebGLRenderer({antialias: true});
+    renderer.setPixelRatio( window.devicePixelRatio );
+    renderer.setSize( window.innerWidth, window.innerHeight );
+    renderer.setClearColor(new THREE.Color(256, 256, 256));
+    document.body.appendChild( renderer.domElement );
+
+    // Cam
+    camera = new THREE.PerspectiveCamera(
+        70, window.innerWidth / window.innerHeight, 1, 1000 );
+    camera.position.z = 400;
+
+    // Controls
+    controls = new THREE.OrbitControls( camera, renderer.domElement );
+    // controls.enableDamping = true;
+        // an animation loop is required when either damping or auto-rotation are enabled
+    // controls.dampingFactor = 0.05;
+    controls.screenSpacePanning = false;
+    controls.minDistance = 100;
+    controls.maxDistance = 500;
+    controls.maxPolarAngle = Math.PI / 2;
+
+    scene = new THREE.Scene();
+    var gridHelper = new THREE.GridHelper( 400, 40, 0x0000ff, 0x808080 );
+    gridHelper.position.y = 0;
+    gridHelper.position.x = 0;
+    scene.add( gridHelper );
+    // var polarGridHelper = new THREE.PolarGridHelper( 200, 16, 8, 64, 0x0000ff, 0x808080 );
+    // polarGridHelper.position.y = -150;
+    // polarGridHelper.position.x = -150;
+    // scene.add( polarGridHelper);
+
+    // Listeners
+    window.addEventListener( 'resize', onWindowResize, false );
+}
+function onWindowResize() {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize( window.innerWidth, window.innerHeight );
+}
+function animate() {
+    requestAnimationFrame( animate );
+    // var time = - performance.now() * 0.0003;
+    // camera.position.x = 400 * Math.cos( time );
+    // camera.position.z = 400 * Math.sin( time );
+    // camera.lookAt( scene.position );
+
+    controls.update();
+
+    renderer.render( scene, camera );
+}
+
+
+
 // Init libs
+/*
 var mathbox = mathBox({
     plugins: ['core', 'controls', 'cursor', 'mathbox'],
     controls: {
@@ -20,7 +82,7 @@ $('#button').on('click', function(event) {
 });
 
 
-/** ############## PRESENTATION */
+// PRESENTATION
 
 var present = mathbox.present({index: 0});
 var slide = present.clock().slide({id: 'top'});
@@ -122,19 +184,20 @@ slide
     // .line({color: '#1fff00', size: 15, opacity: 1, zIndex: 2 });
 
 // color: '#B8860B',
+*/
 
-let nbSlides = 15;
+var nbSlides = 15;
 // $(window).keydown(function(e) {});
 
 $('#halfmunkres').hide();
 top.onkeydown = function(e) {
     switch (e.keyCode) {
         case 81:
-            let a = present[0].get('index') + 1;
+            var a = present[0].get('index') + 1;
             //console.log(a);
             return present[0].set('index', Math.max(present[0].get('index') - 1, 0));
         case 68:
-            let b = present[0].get('index') + 1;
+            var b = present[0].get('index') + 1;
             //console.log(b);
             console.log("Next slide.");
             return present[0].set('index', Math.min(present[0].get('index') + 1, nbSlides));
