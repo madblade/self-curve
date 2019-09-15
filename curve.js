@@ -1,58 +1,47 @@
-var Simple1DNoise = function()
+var Simple1DNoise = function(nbControlPoints, loop)
 {
-    var MAX_VERTICES = 256;
-    var MAX_VERTICES_MASK = MAX_VERTICES -1;
     var amplitude = 1;
-    var nbPoints = 15;
-    var scale = 1 / nbPoints;
+    var nbPoints = nbControlPoints;
 
+    // Random sampling
     var r = [];
-
-    // Quick and dirty loop.
-    var fmn = Math.floor(MAX_VERTICES / nbPoints);
-    for ( var i = 0; i < fmn; ++i ) {
+    for ( var i = 0; i < nbPoints; ++i ) {
         r.push(Math.random());
     }
-    for ( var j = 1; j < 15; ++j ) {
-        for ( var i = 0; i < fmn; ++i ) {
-            r.push(r[i]);
-        }
-    }
+    if (loop) r[r.length - 1] = r[0];
 
-    var getVal = function( x ){
-        var scaledX = x * scale;
+    var getVal = function(x, maxValue)
+    {
+        // Remapping
+        var scaledX = x * nbPoints / maxValue;
         var xFloor = Math.floor(scaledX);
         var t = scaledX - xFloor;
         var tRemapSmoothstep = t * t * ( 3 - 2 * t );
 
-        // Modulo using &
-        var xMin = xFloor & MAX_VERTICES_MASK;
-        var xMax = ( xMin + 1 ) & MAX_VERTICES_MASK;
-
-        var y = lerp( r[ xMin ], r[ xMax ], tRemapSmoothstep );
+        // Interpolation
+        var xMin = xFloor % nbPoints;
+        var xMax = (xMin + 1) % nbPoints;
+        var y = lerp(r[ xMin ], r[ xMax ], tRemapSmoothstep);
 
         return y * amplitude;
     };
 
     /**
-     * Linear interpolation function.
+     * Linear interpolation.
      * @param a The lower integer value
      * @param b The upper integer value
      * @param t The value between the two
      * @returns {number}
      */
     var lerp = function(a, b, t ) {
-        return a * ( 1 - t ) + b * t;
+        return a * (1 - t) + b * t;
     };
 
-    // return the API
+    // API
     return {
         getVal: getVal,
         setAmplitude: function(newAmplitude) {
             amplitude = newAmplitude;
-        },
-        setScale: function(newScale) {
-            scale = newScale;
         }
     };
 };
@@ -60,13 +49,13 @@ var Simple1DNoise = function()
 var curveResolution = 256;
 function generateClosedCurve(resolution)
 {
-    var generator = Simple1DNoise();
+    var generator = Simple1DNoise(15, true);
     var noise1D = [];
     for (var idx = 0; idx < resolution; ++idx)
-        noise1D.push(generator.getVal(idx));
+        noise1D.push(generator.getVal(idx, resolution));
 
-    // console.log(noise1D[0]);
-    // console.log(noise1D[noise1D.length-1]);
+    console.log(noise1D[0]);
+    console.log(noise1D[noise1D.length-1]);
 
     var lineMaterial = new MeshLineMaterial({
         color: 0xff8800,
@@ -102,6 +91,7 @@ function generateClosedCurve(resolution)
 
     return meshLineMesh;
 }
+
 
 //
 
