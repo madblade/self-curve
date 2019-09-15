@@ -1,4 +1,5 @@
-var Simple1DNoise = function() {
+var Simple1DNoise = function()
+{
     var MAX_VERTICES = 256;
     var MAX_VERTICES_MASK = MAX_VERTICES -1;
     var amplitude = 1;
@@ -9,6 +10,7 @@ var Simple1DNoise = function() {
     for ( var i = 0; i < MAX_VERTICES; ++i ) {
         r.push(Math.random());
     }
+    r.push(r[0]);
 
     var getVal = function( x ){
         var scaledX = x * scale;
@@ -48,6 +50,49 @@ var Simple1DNoise = function() {
     };
 };
 
+var curveResolution = 256;
+function generateClosedCurve(resolution)
+{
+    var generator = Simple1DNoise();
+    var noise1D = [];
+    for (var idx = 0; idx < resolution; ++idx)
+        noise1D.push(generator.getVal(idx / 15));
+
+    var lineMaterial = new MeshLineMaterial({
+        color: 0xff8800,
+        lineWidth: 1,
+        clipping: false
+    });
+
+    var geometry = new THREE.Geometry();
+    for (var x = 0; x < resolution; ++x) {
+        var xx = (x / resolution) * 2 * Math.PI;
+        var c1 = 50 + 150 * noise1D[x];
+
+        var coordX = c1 * Math.cos(xx);
+        var coordY = c1 * Math.sin(xx);
+
+        geometry.vertices.push(
+            new THREE.Vector3(
+                coordX,
+                1,
+                coordY
+            )
+        );
+    }
+
+    // var material = new THREE.LineBasicMaterial({
+    //     color: 0xff8800
+    // });
+    // var line = new THREE.Line( geometry, material );
+
+    var line = new MeshLine();
+    line.setGeometry(geometry);
+    var meshLineMesh = new THREE.Mesh(line.geometry, lineMaterial);
+
+    return meshLineMesh;
+}
+
 // function mainFunction(x, y) {
 //     return (Math.PI / 2 + .6 * Math.sin(x - y + 2 * Math.sin(y)) + .3 * Math.sin(x * 2 + y * 2 * 1.81)
 //         + .1825 * Math.sin(x * 3 - y * 2 * 2.18)) - .5;
@@ -79,14 +124,9 @@ var emitSurfaceBlopTime = function (emit, x, y, i, j, t) {
     return emit(x, y, multisineT(t1, x, y));
 };
 
-var curveResolution = 256;
-
 var resoCross = curveResolution;
 var segmentResolution = 2;
-var generator = Simple1DNoise();
-var noise1D = [];
-for (var idx = 0; idx < curveResolution; ++idx)
-    noise1D.push(generator.getVal(idx / 15));
+
 
 var curve = function(emit, x, i, t) {
     var xx = x * Math.PI / 2;
@@ -279,4 +319,4 @@ for (var uu = -lle; uu < lle; uu+=0.25) {
     }
 }
 
-console.log(voxData);
+// console.log(voxData);

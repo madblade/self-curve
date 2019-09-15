@@ -37,14 +37,19 @@ function init() {
     // polarGridHelper.position.x = -150;
     // scene.add( polarGridHelper);
 
+    var loop = generateClosedCurve(256);
+    scene.add(loop);
+
     // Listeners
     window.addEventListener( 'resize', onWindowResize, false );
 }
+
 function onWindowResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize( window.innerWidth, window.innerHeight );
 }
+
 function animate() {
     requestAnimationFrame( animate );
     // var time = - performance.now() * 0.0003;
@@ -59,33 +64,8 @@ function animate() {
 
 
 
-// Init libs
+// Old mathbox
 /*
-var mathbox = mathBox({
-    plugins: ['core', 'controls', 'cursor', 'mathbox'],
-    controls: {
-        klass: THREE.OrbitControls // Orbit controls, i.e. Euler angles, with gimbal lock
-        //klass: THREE.TrackballControls // Trackball controls, i.e. Free quaternion rotation
-    }
-});
-
-if (mathbox.fallback) throw "WebGL not supported";
-var three = mathbox.three;
-three.renderer.setClearColor(new THREE.Color(256.0, 256.0, 256.0), 1.0);
-var camera = mathbox.camera({proxy: true, position: [0, 0, 10]});
-var view = mathbox.cartesian({range: [[-2, 2], [-2, 2], [-2, 2]], scale: [4, 2, 2]});
-mathbox.set('focus', 3);
-
-$('#button').on('click', function(event) {
-    event.preventDefault(); // To prevent following the link (optional)
-    // performDemo();
-});
-
-
-// PRESENTATION
-
-var present = mathbox.present({index: 0});
-var slide = present.clock().slide({id: 'top'});
 
 // Axes + grid
 slide.cartesian({ range: [[-2, 2], [-2, 2], [-2, 2]], scale: [4, 2, 3], position: [0, -.55]})
@@ -190,16 +170,13 @@ var nbSlides = 15;
 // $(window).keydown(function(e) {});
 
 $('#halfmunkres').hide();
-top.onkeydown = function(e) {
+document.addEventListener('keydown', function(e) {
     switch (e.keyCode) {
         case 81:
-            var a = present[0].get('index') + 1;
-            //console.log(a);
-            return present[0].set('index', Math.max(present[0].get('index') - 1, 0));
+            console.log('left');
+            break;
         case 68:
-            var b = present[0].get('index') + 1;
-            //console.log(b);
-            console.log("Next slide.");
-            return present[0].set('index', Math.min(present[0].get('index') + 1, nbSlides));
+            console.log('right');
+            break;
     }
-};
+});
