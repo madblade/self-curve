@@ -54,9 +54,6 @@ function generateClosedCurve(resolution)
     for (var idx = 0; idx < resolution; ++idx)
         noise1D.push(generator.getVal(idx, resolution));
 
-    console.log(noise1D[0]);
-    console.log(noise1D[noise1D.length-1]);
-
     var lineMaterial = new MeshLineMaterial({
         color: 0xff8800,
         lineWidth: 1,
@@ -161,7 +158,7 @@ function generatePlane(widthSegments, heightSegments, loopSkeleton, useColor)
             wireframe: true
         }) :
         new THREE.MeshPhongMaterial({
-            color: 0x1111ff,
+            color: 0x74add1,
             side: THREE.DoubleSide,
             wireframe: true
         });
