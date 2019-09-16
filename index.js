@@ -32,16 +32,11 @@ function init() {
     gridHelper.position.y = 0;
     gridHelper.position.x = 0;
     scene.add(gridHelper);
-    // var polarGridHelper = new THREE.PolarGridHelper( 200, 16, 8, 64, 0x0000ff, 0x808080 );
-    // polarGridHelper.position.y = -150;
-    // polarGridHelper.position.x = -150;
-    // scene.add( polarGridHelper);
 
-    var light = new THREE.PointLight(0xffffff, 1, 1000);
-    light.position.set(0, 200, 0);
+    var light = new THREE.HemisphereLight( 0xffffbb, 0x080820, 1 );
     scene.add(light);
 
-    var resolution = 512;
+    var resolution = 100;
 
     var loop = generateClosedCurve(resolution);
     var loopSkeleton = loop[0];
@@ -51,7 +46,8 @@ function init() {
     var plane = generatePlane(
         resolution - 1,
         resolution - 1,
-        loopSkeleton
+        loopSkeleton,
+        true
     );
     scene.add(plane);
 

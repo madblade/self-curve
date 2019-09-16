@@ -94,7 +94,59 @@ function generateClosedCurve(resolution)
     return [skeleton, meshLineMesh];
 }
 
-function generatePlane(widthSegments, heightSegments, loopSkeleton)
+var palref = [
+    "#d73027",
+    "#f46d43",
+    "#f46d43",
+    "#fdae61",
+    "#fee090",
+    "#ffffbf",
+    "#e0f3f8",
+    "#abd9e9",
+    "#74add1",
+    "#6694d1",
+    "#4575b4",
+    "#4575b4"
+];
+
+var palette = [
+    [215, 48, 39],
+    [244, 109, 67],
+    [253, 174, 97],
+    [254, 224, 144],
+    [255, 255, 191],
+    [224, 243, 248],
+    [171, 217, 233],
+    [116, 173, 209],
+    [102, 148, 209],
+    [69, 117, 180],
+    [69, 117, 180]
+];
+
+function lerpRGB(
+    aR, aG, aB,
+    bR, bG, bB,
+    value)
+{
+    // var aR = 0;   var aG = 0; var aB = 255;
+    // var bR = 255; var bG = 0; var bB = 0;
+
+    var red   = (bR - aR) * value + aR;
+    var green = (bG - aG) * value + aG;
+    var blue  = (bB - aB) * value + aB;
+
+    return [red, green, blue]
+}
+
+/**
+ * Generates an "inscribed rectangle" intersection mesh given a closed loop.
+ * @param widthSegments Plane X resolution
+ * @param heightSegments Plane Y resolution, must equal X resolution
+ * @param loopSkeleton Loop coordinates, array of THREE.Vector3 of size X resolution
+ * @param useColor Compute distance to intersections
+ * @returns {ai.params.Mesh|R} the (colored) mesh
+ */
+function generatePlane(widthSegments, heightSegments, loopSkeleton, useColor)
 {
     var width = 200;
     var height = 200;
@@ -102,11 +154,17 @@ function generatePlane(widthSegments, heightSegments, loopSkeleton)
     var geometry = new THREE.PlaneBufferGeometry(
         width, height, widthSegments, heightSegments
     );
-    var material = new THREE.MeshPhongMaterial({
-        color: 0x1111ff,
-        side: THREE.DoubleSide,
-        wireframe: true
-    });
+    var material = useColor ?
+        new THREE.MeshPhongMaterial({
+            vertexColors: THREE.VertexColors,
+            side: THREE.DoubleSide,
+            wireframe: true
+        }) :
+        new THREE.MeshPhongMaterial({
+            color: 0x1111ff,
+            side: THREE.DoubleSide,
+            wireframe: true
+        });
 
     var width_half = width / 2;
     var height_half = height / 2;
@@ -131,7 +189,7 @@ function generatePlane(widthSegments, heightSegments, loopSkeleton)
             var loopX = loopSkeleton[nix];
             var midX = 0.5 * (loopX.x + loopY.x);
             var midY = 0.5 * (loopX.z + loopY.z);
-            var dist = Math.sqrt(
+            var dist = 0.75 * Math.sqrt(
                 Math.pow(loopX.x - loopY.x, 2) +
                 Math.pow(loopX.z - loopY.z, 2)
             );
@@ -145,8 +203,49 @@ function generatePlane(widthSegments, heightSegments, loopSkeleton)
     }
     var vertices = new Float32Array(verts);
 
-    // geometry.addAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
-    // itemSize = 3 because there are 3 values (components) per vertex
+    var cols = [];
+    if (useColor)
+    {
+        // O(n^4)
+        // This is extremely expensive,
+        // so don't use it for plane geometry >= 256
+        var maxDistance = 5;
+        for (var i = 0; i < vertices.length; i+=3) {
+            var x1 = vertices[i];
+            var y1 = vertices[i+1];
+            var z1 = vertices[i+2];
+            var dist = Number.POSITIVE_INFINITY;
+            for (var j = 0; j < vertices.length; j+=3) {
+                var x2m = vertices[j] - x1;
+                var y2m = vertices[j+1] - y1;
+                var z2m = vertices[j+2] - z1;
+
+                var dist2 = x2m * x2m + y2m * y2m + z2m * z2m;
+
+                dist = dist2 !== 0 ? Math.min(dist, dist2) : dist;
+            }
+
+            var value = Math.min(Math.sqrt(dist) / maxDistance, 1.0);
+            var ml = value * palette.length;
+            var fl = Math.floor(ml);
+            var excess = ml - fl;
+            var p1 = palette[Math.min(fl, palette.length - 1)];
+            var p2 = palette[Math.min(fl + 1, palette.length - 1)];
+            var newColor = lerpRGB(
+                p1[0], p1[1], p1[2],
+                p2[0], p2[1], p2[2],
+                excess
+            );
+            // console.log(newColor);
+            cols.push(newColor[0] / 256, newColor[1] / 256, newColor[2] / 256);
+        }
+        var colors = new Float32Array(cols);
+
+        geometry.addAttribute('color',
+            new THREE.BufferAttribute(colors, 3)
+        );
+    }
+
     geometry.addAttribute( 'position',
         new THREE.BufferAttribute( vertices, 3 )
     );
