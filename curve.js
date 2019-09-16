@@ -63,6 +63,7 @@ function generateClosedCurve(resolution)
         clipping: false
     });
 
+    var skeleton = [];
     var geometry = new THREE.Geometry();
     for (var x = 0; x < resolution; ++x) {
         var xx = (x / resolution) * 2 * Math.PI;
@@ -71,13 +72,14 @@ function generateClosedCurve(resolution)
         var coordX = c1 * Math.cos(xx);
         var coordY = c1 * Math.sin(xx);
 
-        geometry.vertices.push(
-            new THREE.Vector3(
-                coordX,
-                1,
-                coordY
-            )
+        var v = new THREE.Vector3(
+            coordX,
+            1,
+            coordY
         );
+
+        geometry.vertices.push(v);
+        skeleton.push(v.clone());
     }
 
     // var material = new THREE.LineBasicMaterial({
@@ -89,28 +91,27 @@ function generateClosedCurve(resolution)
     line.setGeometry(geometry);
     var meshLineMesh = new THREE.Mesh(line.geometry, lineMaterial);
 
-    return meshLineMesh;
+    return [skeleton, meshLineMesh];
 }
 
-function generatePlane()
+function generatePlane(widthSegments, heightSegments, loopSkeleton)
 {
     var width = 200;
     var height = 200;
-    var widthSegments = 32;
-    var heightSegments = 32;
 
     var geometry = new THREE.PlaneBufferGeometry(
         width, height, widthSegments, heightSegments
     );
     var material = new THREE.MeshPhongMaterial({
         color: 0x1111ff,
-        side: THREE.DoubleSide
+        side: THREE.DoubleSide,
+        wireframe: true
     });
 
     var width_half = width / 2;
     var height_half = height / 2;
-    var gridX = Math.floor( widthSegments ) || 1;
-    var gridY = Math.floor( heightSegments ) || 1;
+    var gridX = Math.floor(widthSegments) || 1;
+    var gridY = Math.floor(heightSegments) || 1;
     var gridX1 = gridX + 1;
     var gridY1 = gridY + 1;
     var segment_width = width / gridX;
@@ -121,11 +122,25 @@ function generatePlane()
     var verts = [];
     for (iy = 0; iy < gridY1; iy ++)
     {
+        var loopY = loopSkeleton[iy];
+
         var y = iy * segment_height - height_half;
         for (ix = 0; ix < gridX1; ix ++)
         {
+            var nix = (iy + ix + 1) % gridY1;
+            var loopX = loopSkeleton[nix];
+            var midX = 0.5 * (loopX.x + loopY.x);
+            var midY = 0.5 * (loopX.z + loopY.z);
+            var dist = Math.sqrt(
+                Math.pow(loopX.x - loopY.x, 2) +
+                Math.pow(loopX.z - loopY.z, 2)
+            );
+
             var x = ix * segment_width - width_half;
-            verts.push(x, x * y / 200, -y);
+            var newX = midX; // x;
+            var newY = midY; // -y;
+            var newZ = dist; // newX * newY / 200;
+            verts.push(newX, newZ, newY);
         }
     }
     var vertices = new Float32Array(verts);

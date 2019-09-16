@@ -18,7 +18,7 @@ function init() {
     camera.position.z = 400;
 
     // Controls
-    controls = new THREE.OrbitControls( camera, renderer.domElement );
+    controls = new THREE.OrbitControls(camera, renderer.domElement);
     // controls.enableDamping = true;
         // an animation loop is required when either damping or auto-rotation are enabled
     // controls.dampingFactor = 0.05;
@@ -28,23 +28,31 @@ function init() {
     controls.maxPolarAngle = Math.PI / 2;
 
     scene = new THREE.Scene();
-    var gridHelper = new THREE.GridHelper( 400, 40, 0x0000ff, 0x808080 );
+    var gridHelper = new THREE.GridHelper(400, 40, 0x0000ff, 0x808080);
     gridHelper.position.y = 0;
     gridHelper.position.x = 0;
-    scene.add( gridHelper );
+    scene.add(gridHelper);
     // var polarGridHelper = new THREE.PolarGridHelper( 200, 16, 8, 64, 0x0000ff, 0x808080 );
     // polarGridHelper.position.y = -150;
     // polarGridHelper.position.x = -150;
     // scene.add( polarGridHelper);
 
-    var light = new THREE.PointLight( 0xffffff, 1, 1000);
-    light.position.set( 0, 200, 0 );
-    scene.add( light );
+    var light = new THREE.PointLight(0xffffff, 1, 1000);
+    light.position.set(0, 200, 0);
+    scene.add(light);
 
-    var loop = generateClosedCurve(256);
-    scene.add(loop);
+    var resolution = 512;
 
-    var plane = generatePlane();
+    var loop = generateClosedCurve(resolution);
+    var loopSkeleton = loop[0];
+    var loopMesh = loop[1];
+    scene.add(loopMesh);
+
+    var plane = generatePlane(
+        resolution - 1,
+        resolution - 1,
+        loopSkeleton
+    );
     scene.add(plane);
 
     // Listeners
