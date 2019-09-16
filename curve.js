@@ -92,6 +92,56 @@ function generateClosedCurve(resolution)
     return meshLineMesh;
 }
 
+function generatePlane()
+{
+    var width = 200;
+    var height = 200;
+    var widthSegments = 32;
+    var heightSegments = 32;
+
+    var geometry = new THREE.PlaneBufferGeometry(
+        width, height, widthSegments, heightSegments
+    );
+    var material = new THREE.MeshPhongMaterial({
+        color: 0x1111ff,
+        side: THREE.DoubleSide
+    });
+
+    var width_half = width / 2;
+    var height_half = height / 2;
+    var gridX = Math.floor( widthSegments ) || 1;
+    var gridY = Math.floor( heightSegments ) || 1;
+    var gridX1 = gridX + 1;
+    var gridY1 = gridY + 1;
+    var segment_width = width / gridX;
+    var segment_height = height / gridY;
+    var ix, iy;
+
+    // Generate vertices
+    var verts = [];
+    for (iy = 0; iy < gridY1; iy ++)
+    {
+        var y = iy * segment_height - height_half;
+        for (ix = 0; ix < gridX1; ix ++)
+        {
+            var x = ix * segment_width - width_half;
+            verts.push(x, x * y / 200, -y);
+        }
+    }
+    var vertices = new Float32Array(verts);
+
+    // geometry.addAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
+    // itemSize = 3 because there are 3 values (components) per vertex
+    geometry.addAttribute( 'position',
+        new THREE.BufferAttribute( vertices, 3 )
+    );
+
+    // Recompute normals
+    geometry.computeVertexNormals();
+    var plane = new THREE.Mesh(geometry, material);
+
+    return plane;
+}
 
 //
 

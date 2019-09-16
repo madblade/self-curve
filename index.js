@@ -37,8 +37,15 @@ function init() {
     // polarGridHelper.position.x = -150;
     // scene.add( polarGridHelper);
 
+    var light = new THREE.PointLight( 0xffffff, 1, 1000);
+    light.position.set( 0, 200, 0 );
+    scene.add( light );
+
     var loop = generateClosedCurve(256);
     scene.add(loop);
+
+    var plane = generatePlane();
+    scene.add(plane);
 
     // Listeners
     window.addEventListener( 'resize', onWindowResize, false );
