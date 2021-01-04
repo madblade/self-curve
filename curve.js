@@ -446,5 +446,3 @@ for (var uu = -lle; uu < lle; uu+=0.25) {
         voxData .push([x+lca, y+lcb, 0.0]);
     }
 }
-
-// console.log(voxData);
